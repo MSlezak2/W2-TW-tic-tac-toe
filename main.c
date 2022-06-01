@@ -545,18 +545,34 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 //
 //}
 
-void choose_game_mode(int *game_mode2)
+// TODO: FIGURE OUT WHY DOESN'T IT RUN
+//void choose_game_mode(int *game_mode)
+//{
+//	char temp_game_mode = ' ';
+//
+//	do {
+//		system("cls");
+//		printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
+//		scanf_s("%c", &temp_game_mode);
+//	} while (temp_game_mode != '1' && temp_game_mode != '2' && temp_game_mode != '3');
+//
+//	
+//	*game_mode = (int)temp_game_mode - 48;
+//}
+
+void choose_game_mode()
 {
 	char temp_game_mode = ' ';
+
 	do {
 		system("cls");
 		printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
 		scanf_s("%c", &temp_game_mode);
 	} while (temp_game_mode != '1' && temp_game_mode != '2' && temp_game_mode != '3');
 
-	*game_mode2 = (int)temp_game_mode - 48;
+	
+	game_mode = (int)temp_game_mode - 48;
 }
-
 
 int checkforwin()
 {
