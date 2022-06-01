@@ -10,11 +10,11 @@ int x, y; // coordinates chosen by user
 int computer_x, computer_y; // coordinates chosen by computer
 
 
-int difficulty; // można enum, będzie profesjonalniej
+int difficulty; // mo?na enum, b?dzie profesjonalniej
 int game_mode = 2;
-char name_1[50] = "";
+char name_1[50] = ""; // imie pierwszego gracza
 char name_2[50] = "";
-char token_1; // znacznik
+char token_1; // znacznik pierwszego gracza
 char token_2; // znacznik
 //...
 int num_moves = 0;
@@ -33,22 +33,29 @@ void choose_token();
 void stats();
 void computers_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y);
 int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, int* winning_choice_y);
+void choose_game_mode(int game_mode);
+int checkforwin();
+void play_again();
 
 int main()
 {
 
 	board[0][0] = 'X'; board[0][1] = 'O'; board[0][2] = '_';
-	board[1][0] = 'O'; board[1][1] = 'X'; board[1][2] = '_';
-	board[2][0] = 'X'; board[2][1] = 'O'; board[2][2] = 'O';
+	board[1][0] = 'X'; board[1][1] = '_'; board[1][2] = 'O';
+	board[2][0] = '_'; board[2][1] = '_'; board[2][2] = '_';
+	token_1 = 'X';
+	token_2 = 'O';
+	
+	computers_move(board, token_2, token_1, &computer_x, &computer_y);
 
 	do
 	{
-		// Ekran powitalny - użytkownik wybiera opcje itd...
+		// Ekran powitalny - u?ytkownik wybiera opcje itd...
 
 ///****tryb gry****/
-//game_mode = choose_game_mode();
+		//choose_game_mode(game_mode);
 
-///****trudność****/
+///****trudno??****/
 //difficulty = choose_difficulty();
 
 /****wybór imion****/
@@ -66,36 +73,34 @@ int main()
 		/****wyczyszczenie planszy****/
 		//make_null_tab(board);
 
-		// Pętla gry
+		// P?tla gry
 		do
 		{
-			/****wyczyść ekran****/
+			/****wyczy?? ekran****/
 			system("cls");
-			/****wyświetl planszę****/
+			/****wy?wietl plansz?****/
 			Print_Bord_on_Screen(board);
 
 			// gracz 1:
 			switch (game_mode)
 			{
 			case 1: // player vs player
-		/****zapytaj o współrzędne****/
+		/****zapytaj o wspó?rz?dne****/
 				give_coordinates();
-				coordinatesCheck(x, y);
 				is_occupied(board);
-				/****sprawdź czy dobre i wyświetl feedback****/
+				/****sprawd? czy dobre i wy?wietl feedback****/
 
 				break;
 
 			case 2: // player vs computer
-		/****zapytaj o współrzędne****/
+		/****zapytaj o wspó?rz?dne****/
 				give_coordinates();
-				coordinatesCheck(x, y);
 				is_occupied(board);
-				/****sprawdź czy dobre i wyświetl feedback****/
+				/****sprawd? czy dobre i wy?wietl feedback****/
 				break;
 
 			case 3: // computer vs computer
-		/****ruch komputera (w zależności od poziomy trudności)****/
+		/****ruch komputera (w zale?no?ci od poziomy trudno?ci)****/
 				break;
 			}
 
@@ -103,35 +108,36 @@ int main()
 			switch (game_mode)
 			{
 			case 1: // player vs player
-		/****zapytaj o współrzędne****/
+		/****zapytaj o wspó?rz?dne****/
 				give_coordinates();
-				coordinatesCheck(x, y);
 				is_occupied(board);
-				/****sprawdź czy dobre i wyświetl feedback****/
+				/****sprawd? czy dobre i wy?wietl feedback****/
 				break;
 
 			case 2: // player vs computer
-		/****ruch komputera (w zależności od poziomy trudności)****/
+		/****ruch komputera (w zale?no?ci od poziomy trudno?ci)****/
 				break;
 
 			case 3: // computer vs computer
-		/****ruch komputera (w zależności od poziomy trudności)****/
+		/****ruch komputera (w zale?no?ci od poziomy trudno?ci)****/
 				break;
 			}
 
 			/****inkrementacja zmiennej num_moves****/
 			num_moves++;
 
-			//} while (!(/****wygrana?****/) || !(/****remis?****/));
+			//} while (checkforwin() == 0);
 		} while (0);
 		stop = clock();
-		/****wyświetl wynik****/
+		/****wy?wietl wynik****/
 
 		/****statystyki****/
 		stats();
-		/****zapytaj czy chce kontynuować****/
+		/****zapytaj czy chce kontynuowa?****/
+		play_again();
 
 	} while (1);
+
 
 	return 0;
 }
@@ -177,32 +183,63 @@ void Print_Bord_on_Screen(char poziom[3][3])
 	}
 }
 
+//void give_coordinates()
+//{
+//	int temp_x, temp_y;
+//	printf("\ngive coordinates x ");
+//	scanf_s("%d", &temp_x);
+//	x = temp_x - 1;
+//	printf("\ngive coordinates y ");
+//	scanf_s("%d", &temp_y);
+//	y = temp_y - 1;
+//}
+
+// Iza:
+
+//void coordinatesCheck(int x, int y)
+//{
+//	int temp_x, temp_y;
+//	while ((x != 0) && (x != 1) && (x != 2) || (y != 0) && (y != 1) && (y != 2))
+//	{
+//		printf("Your coordinates are outside of the game board. Try again: \n");
+//		printf("x: ");
+//		scanf_s("%d", &temp_x);
+//		x = temp_x - 1;
+//		printf("y: ");
+//		scanf_s("%d", &temp_y);
+//		y = temp_y - 1;
+//	}
+//}
+
 void give_coordinates()
 {
+
+
 	int temp_x, temp_y;
 	printf("\ngive coordinates x ");
 	scanf_s("%d", &temp_x);
 	x = temp_x - 1;
-	printf("\ngive coordinates y ");
-	scanf_s("%d", &temp_y);
-	y = temp_y - 1;
-}
 
-// Iza:
-
-void coordinatesCheck(int x, int y)
-{
-	int temp_x, temp_y;
-	while ((x != 0) && (x != 1) && (x != 2) || (y != 0) && (y != 1) && (y != 2))
+	while ((x != 0) && (x != 1) && (x != 2))
 	{
 		printf("Your coordinates are outside of the game board. Try again: \n");
 		printf("x: ");
 		scanf_s("%d", &temp_x);
 		x = temp_x - 1;
+	}
+
+	printf("\ngive coordinates y ");
+	scanf_s("%d", &temp_y);
+	y = temp_y - 1;
+
+	while ((y != 0) && (y != 1) && (y != 2))
+	{
+		printf("Your coordinates are outside of the game board. Try again: \n");
 		printf("y: ");
 		scanf_s("%d", &temp_y);
 		y = temp_y - 1;
 	}
+
 }
 
 void is_occupied(char board[3][3])
@@ -224,22 +261,30 @@ void is_occupied(char board[3][3])
 
 void choose_name(int game_mode)
 {
-	if (game_mode == 1) //player vs player
+	if (game_mode == 1)
 	{
 		printf("Give names of players: \n");
 		printf("Player 1: \n");
-		scanf_s("%s", name_1, 20);
+		fgets(name_1, 20, stdin);
 		printf("Player 2: \n");
-		scanf_s("%s", name_2, 20);
+		fgets(name_2, 20, stdin);
 	}
-	
-	if (game_mode == 2) // player vs computer
+
+	if (game_mode == 2)
 	{
 		printf("Give your name: \n");
 		printf("Player 1: \n");
-		scanf_s("%s", name_1, 20);
+		fgets(name_1, 20, stdin);
 		printf("Player 2: \n");
 		printf("Computer");
+	}
+
+	if ((game_mode == 3))
+	{
+		printf("Player 1: \n");
+		printf("Computer1");
+		printf("Player 2: \n");
+		printf("Computer2");
 	}
 }
 
@@ -280,6 +325,26 @@ void stats()
 
 	printf("\nIn this game %d moves was performed\n", num_moves);
 	printf("Game duration: %d minutes and %.f seconds. ", game_duration_min, game_duration_sec);
+}
+
+void play_again()
+{
+
+	char newGame;
+
+	do
+	{
+		printf("Do You want to play again? (Y / N)\n");
+		scanf_s(" %c", &newGame);
+
+	} while (newGame != 'Y' && newGame != 'N');
+
+	if (newGame == 'N')
+	{
+		printf("\nGood Bye!");
+		exit(0);
+	}
+
 }
 
 
@@ -444,3 +509,113 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 	// TODO: Extract "check each row" and "check each column" sections into separate functions
 	return can_he_win;
 }
+
+// Gaba:
+
+void choose_game_mode(int game_mode)
+{
+	printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
+	scanf_s("%d", &game_mode);
+
+}
+
+int checkforwin()
+{
+	int which_player_won = 0; // 0 - nobody; 1 - X; 2 - O; 3 - tie
+
+	///cases when X wins
+	//vertical1
+	if (board[0][0] == 'X' && board[0][1] == 'X' && board[0][2] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//vertical2
+	else if (board[1][0] == 'X' && board[1][1] == 'X' && board[1][2] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//vertical3
+	else if (board[2][0] == 'X' && board[2][1] == 'X' && board[2][2] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//cross1
+	else if (board[0][0] == 'X' && board[1][1] == 'X' && board[2][2] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//cross2
+	else if (board[0][2] == 'X' && board[1][1] == 'X' && board[2][0] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//horizontal1
+	else if (board[0][0] == 'X' && board[1][0] == 'X' && board[2][0] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//horizontal2
+	else if (board[0][1] == 'X' && board[1][1] == 'X' && board[2][1] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//horizontal3
+	else if (board[0][2] == 'X' && board[1][2] == 'X' && board[2][2] == 'X') {
+		printf("X won\n");
+		which_player_won = 1;
+	}
+	//cases when O wins
+		//vertical1
+	if (board[0][0] == 'O' && board[0][1] == 'O' && board[0][2] == 'O') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//vertical2
+	else if (board[1][0] == 'O' && board[1][1] == 'O' && board[1][2] == 'O') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//vertical3
+	else if (board[2][0] == 'O' && board[2][1] == 'O' && board[2][2] == 'O') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//cross1
+	else if (board[0][0] == 'O' && board[1][1] == 'O' && board[2][2] == 'O') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//cross2
+	else if (board[0][2] == 'O' && board[1][1] == 'O' && board[2][0] == 'O') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//horizontal1
+	else if (board[0][0] == 'O' && board[1][0] == 'O' && board[2][0] == 'O') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//horizontal2
+	else if (board[0][1] == 'O' && board[1][1] == 'O' && board[2][1] == 'O') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//horizontal3
+	else if (board[0][2] == '0' && board[1][2] == '0' && board[2][2] == '0') {
+		printf("O won\n");
+		which_player_won = 2;
+	}
+	//all full = draw
+	else if (board[0][0] == 'X' || board[0][0] == 'O' && board[0][1] == 'X' || board[0][1] == 'O'
+		&& board[0][2] == 'X' || board[0][2] == 'O' && board[1][0] == 'X' || board[1][0] == 'O'
+		&& board[1][1] == 'X' || board[1][1] == 'O' && board[1][2] == 'X' || board[1][2] == 'O'
+		&& board[2][0] == 'X' || board[2][0] == 'O' && board[2][1] == 'X' || board[2][1] == 'O'
+		&& board[2][2] == 'X' || board[2][2] == 'O') {
+		printf("Draw! Nobody wins\n");
+		which_player_won = 3;
+	}
+
+	return which_player_won;
+}
+	//else
+		//continue //? wiem ze nie to polecenie, ale ma isc dalej i nie mowic, czy jest wygrana czy nie 😛
