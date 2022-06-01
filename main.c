@@ -11,7 +11,7 @@ int computer_x, computer_y; // coordinates chosen by computer
 
 
 int difficulty; // mo?na enum, b?dzie profesjonalniej
-int game_mode = 2;
+int game_mode = 1;
 char name_1[50] = ""; // imie pierwszego gracza
 char name_2[50] = "";
 char token_1; // znacznik pierwszego gracza
@@ -36,6 +36,8 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 void choose_game_mode(int game_mode);
 int checkforwin();
 void play_again();
+void coordinatesCheck(int *coordinate);
+void put_coordinates(int a, int b, char cos[3][3], char token);
 
 int main()
 {
@@ -88,6 +90,7 @@ int main()
 		/****zapytaj o wspó?rz?dne****/
 				give_coordinates();
 				is_occupied(board);
+				put_coordinates(x, y, board, token_1);
 				/****sprawd? czy dobre i wy?wietl feedback****/
 
 				break;
@@ -96,6 +99,7 @@ int main()
 		/****zapytaj o wspó?rz?dne****/
 				give_coordinates();
 				is_occupied(board);
+				put_coordinates(x, y, board, token_1);
 				/****sprawd? czy dobre i wy?wietl feedback****/
 				break;
 
@@ -104,6 +108,8 @@ int main()
 				break;
 			}
 
+			Print_Bord_on_Screen(board);
+
 			// gracz 2:
 			switch (game_mode)
 			{
@@ -111,6 +117,7 @@ int main()
 		/****zapytaj o wspó?rz?dne****/
 				give_coordinates();
 				is_occupied(board);
+				put_coordinates(x, y, board, token_2);
 				/****sprawd? czy dobre i wy?wietl feedback****/
 				break;
 
@@ -127,7 +134,7 @@ int main()
 			num_moves++;
 
 			//} while (checkforwin() == 0);
-		} while (0);
+		} while (1);
 		stop = clock();
 		/****wy?wietl wynik****/
 
@@ -183,6 +190,12 @@ void Print_Bord_on_Screen(char poziom[3][3])
 	}
 }
 
+void put_coordinates(int a, int b, char cos[3][3], char token)
+{
+	cos[a][b] = token;
+}
+
+
 //void give_coordinates()
 //{
 //	int temp_x, temp_y;
@@ -214,32 +227,44 @@ void Print_Bord_on_Screen(char poziom[3][3])
 void give_coordinates()
 {
 
-
 	int temp_x, temp_y;
 	printf("\ngive coordinates x ");
 	scanf_s("%d", &temp_x);
 	x = temp_x - 1;
 
-	while ((x != 0) && (x != 1) && (x != 2))
-	{
-		printf("Your coordinates are outside of the game board. Try again: \n");
-		printf("x: ");
-		scanf_s("%d", &temp_x);
-		x = temp_x - 1;
-	}
+	coordinatesCheck(&x);
 
 	printf("\ngive coordinates y ");
 	scanf_s("%d", &temp_y);
 	y = temp_y - 1;
 
-	while ((y != 0) && (y != 1) && (y != 2))
+	coordinatesCheck(&y);
+
+}
+
+void coordinatesCheck(int *coordinate)
+{
+	int temp_coordinate = 0;
+
+	while ((coordinate != 0) && (coordinate != 1) && (coordinate != 2))
 	{
 		printf("Your coordinates are outside of the game board. Try again: \n");
-		printf("y: ");
-		scanf_s("%d", &temp_y);
-		y = temp_y - 1;
+		printf("x: ");
+		scanf_s("%d", temp_coordinate);
+		*coordinate = temp_coordinate - 1;
 	}
 
+	//int temp_x, temp_y;
+	//while ((x != 0) && (x != 1) && (x != 2) || (y != 0) && (y != 1) && (y != 2))
+	//{
+	//	printf("Your coordinates are outside of the game board. Try again: \n");
+	//	printf("x: ");
+	//	scanf_s("%d", &temp_x);
+	//	x = temp_x - 1;
+	//	printf("y: ");
+	//	scanf_s("%d", &temp_y);
+	//	y = temp_y - 1;
+	//}
 }
 
 void is_occupied(char board[3][3])
