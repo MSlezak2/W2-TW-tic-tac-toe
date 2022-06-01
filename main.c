@@ -38,6 +38,7 @@ int checkforwin();
 void play_again();
 void coordinatesCheck(int *coordinate);
 void put_coordinates(int a, int b, char cos[3][3], char token);
+void choose_game_mode(int game_mode);
 
 int main()
 {
@@ -55,7 +56,7 @@ int main()
 		// Ekran powitalny - u?ytkownik wybiera opcje itd...
 
 ///****tryb gry****/
-		//choose_game_mode(game_mode);
+		choose_game_mode(&game_mode);
 
 ///****trudno??****/
 //difficulty = choose_difficulty();
@@ -537,12 +538,25 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 
 // Gaba:
 
-void choose_game_mode(int game_mode)
-{
-	printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
-	scanf_s("%d", &game_mode);
+//void choose_game_mode(int game_mode)
+//{
+//	printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
+//	scanf_s("%d", &game_mode);
+//
+//}
 
+void choose_game_mode(int *game_mode2)
+{
+	char temp_game_mode = ' ';
+	do {
+		system("cls");
+		printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
+		scanf_s("%c", &temp_game_mode);
+	} while (temp_game_mode != '1' && temp_game_mode != '2' && temp_game_mode != '3');
+
+	*game_mode2 = (int)temp_game_mode - 48;
 }
+
 
 int checkforwin()
 {
@@ -643,4 +657,4 @@ int checkforwin()
 	return which_player_won;
 }
 	//else
-		//continue //? wiem ze nie to polecenie, ale ma isc dalej i nie mowic, czy jest wygrana czy nie 😛
+		//continue //? wiem ze nie to polecenie, ale ma isc dalej i nie mowic, czy jest wygrana czy nie ??
