@@ -12,8 +12,8 @@ int computer_x, computer_y; // coordinates chosen by computer
 
 int difficulty; // mo?na enum, b?dzie profesjonalniej
 int game_mode = 1;
-char name_1[50] = ""; // imie pierwszego gracza
-char name_2[50] = "";
+char name_1[50] = "Michal"; // imie pierwszego gracza
+char name_2[50] = "Wojtek";
 char token_1; // znacznik pierwszego gracza
 char token_2; // znacznik
 //...
@@ -34,18 +34,20 @@ void stats();
 void computers_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y);
 int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, int* winning_choice_y);
 void choose_game_mode(int game_mode);
-int checkforwin();
+int checkforwin(int board[3][3]);
 void play_again();
 void coordinatesCheck(int *coordinate);
 void put_coordinates(int a, int b, char cos[3][3], char token);
-void choose_game_mode(int game_mode);
+void choose_game_mode(int *game_mode);
+int is_there_win(char board[3][3]);
+int has_token_won(char token, char board[3][3]);
 
 int main()
 {
 
-	board[0][0] = 'X'; board[0][1] = 'O'; board[0][2] = '_';
-	board[1][0] = 'X'; board[1][1] = '_'; board[1][2] = 'O';
-	board[2][0] = '_'; board[2][1] = '_'; board[2][2] = '_';
+	board[0][0] = 'X'; board[0][1] = 'X'; board[0][2] = 'O';
+	board[1][0] = 'O'; board[1][1] = 'O'; board[1][2] = 'X';
+	board[2][0] = 'X'; board[2][1] = 'O'; board[2][2] = 'X';
 	token_1 = 'X';
 	token_2 = 'O';
 	
@@ -134,8 +136,8 @@ int main()
 			/****inkrementacja zmiennej num_moves****/
 			num_moves++;
 
-			//} while (checkforwin() == 0);
-		} while (1);
+			} while (checkforwin(board) == 0);
+		//} while (1);
 		stop = clock();
 		/****wy?wietl wynik****/
 
@@ -545,22 +547,7 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 //
 //}
 
-// TODO: FIGURE OUT WHY DOESN'T IT RUN
-//void choose_game_mode(int *game_mode)
-//{
-//	char temp_game_mode = ' ';
-//
-//	do {
-//		system("cls");
-//		printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
-//		scanf_s("%c", &temp_game_mode);
-//	} while (temp_game_mode != '1' && temp_game_mode != '2' && temp_game_mode != '3');
-//
-//	
-//	*game_mode = (int)temp_game_mode - 48;
-//}
-
-void choose_game_mode()
+void choose_game_mode(int *game_mode)
 {
 	char temp_game_mode = ' ';
 
@@ -571,106 +558,199 @@ void choose_game_mode()
 	} while (temp_game_mode != '1' && temp_game_mode != '2' && temp_game_mode != '3');
 
 	
-	game_mode = (int)temp_game_mode - 48;
+	*game_mode = (int)temp_game_mode - 48;
 }
 
-int checkforwin()
-{
-	int which_player_won = 0; // 0 - nobody; 1 - X; 2 - O; 3 - tie
+//void choose_game_mode()
+//{
+//	char temp_game_mode = ' ';
+//
+//	do {
+//		system("cls");
+//		printf("Choose game mode:\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
+//		scanf_s("%c", &temp_game_mode);
+//	} while (temp_game_mode != '1' && temp_game_mode != '2' && temp_game_mode != '3');
+//
+//	
+//	game_mode = (int)temp_game_mode - 48;
+//}
 
-	///cases when X wins
-	//vertical1
-	if (board[0][0] == 'X' && board[0][1] == 'X' && board[0][2] == 'X') {
-		printf("X won\n");
+int checkforwin(int board[3][3])
+{
+	int which_player_won = 0; // 0 - nobody; 1 - player_1; 2 - player_2; 3 - tie
+
+	/////cases when X wins
+	////vertical1
+	//if (board[0][0] == 'X' && board[0][1] == 'X' && board[0][2] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////vertical2
+	//else if (board[1][0] == 'X' && board[1][1] == 'X' && board[1][2] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////vertical3
+	//else if (board[2][0] == 'X' && board[2][1] == 'X' && board[2][2] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////cross1
+	//else if (board[0][0] == 'X' && board[1][1] == 'X' && board[2][2] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////cross2
+	//else if (board[0][2] == 'X' && board[1][1] == 'X' && board[2][0] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////horizontal1
+	//else if (board[0][0] == 'X' && board[1][0] == 'X' && board[2][0] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////horizontal2
+	//else if (board[0][1] == 'X' && board[1][1] == 'X' && board[2][1] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////horizontal3
+	//else if (board[0][2] == 'X' && board[1][2] == 'X' && board[2][2] == 'X') {
+	//	printf("X won\n");
+	//	which_player_won = 1;
+	//}
+	////cases when O wins
+	//	//vertical1
+	//if (board[0][0] == 'O' && board[0][1] == 'O' && board[0][2] == 'O') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////vertical2
+	//else if (board[1][0] == 'O' && board[1][1] == 'O' && board[1][2] == 'O') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////vertical3
+	//else if (board[2][0] == 'O' && board[2][1] == 'O' && board[2][2] == 'O') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////cross1
+	//else if (board[0][0] == 'O' && board[1][1] == 'O' && board[2][2] == 'O') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////cross2
+	//else if (board[0][2] == 'O' && board[1][1] == 'O' && board[2][0] == 'O') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////horizontal1
+	//else if (board[0][0] == 'O' && board[1][0] == 'O' && board[2][0] == 'O') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////horizontal2
+	//else if (board[0][1] == 'O' && board[1][1] == 'O' && board[2][1] == 'O') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////horizontal3
+	//else if (board[0][2] == '0' && board[1][2] == '0' && board[2][2] == '0') {
+	//	printf("O won\n");
+	//	which_player_won = 2;
+	//}
+	////all full = draw
+	
+	// has player_1 won?
+	if (has_token_won(token_1, board))
+	{
 		which_player_won = 1;
+		printf("%s won", name_1);
 	}
-	//vertical2
-	else if (board[1][0] == 'X' && board[1][1] == 'X' && board[1][2] == 'X') {
-		printf("X won\n");
-		which_player_won = 1;
-	}
-	//vertical3
-	else if (board[2][0] == 'X' && board[2][1] == 'X' && board[2][2] == 'X') {
-		printf("X won\n");
-		which_player_won = 1;
-	}
-	//cross1
-	else if (board[0][0] == 'X' && board[1][1] == 'X' && board[2][2] == 'X') {
-		printf("X won\n");
-		which_player_won = 1;
-	}
-	//cross2
-	else if (board[0][2] == 'X' && board[1][1] == 'X' && board[2][0] == 'X') {
-		printf("X won\n");
-		which_player_won = 1;
-	}
-	//horizontal1
-	else if (board[0][0] == 'X' && board[1][0] == 'X' && board[2][0] == 'X') {
-		printf("X won\n");
-		which_player_won = 1;
-	}
-	//horizontal2
-	else if (board[0][1] == 'X' && board[1][1] == 'X' && board[2][1] == 'X') {
-		printf("X won\n");
-		which_player_won = 1;
-	}
-	//horizontal3
-	else if (board[0][2] == 'X' && board[1][2] == 'X' && board[2][2] == 'X') {
-		printf("X won\n");
-		which_player_won = 1;
-	}
-	//cases when O wins
-		//vertical1
-	if (board[0][0] == 'O' && board[0][1] == 'O' && board[0][2] == 'O') {
-		printf("O won\n");
+	// has player_2 won?
+	else if (has_token_won(token_2, board))
+	{
 		which_player_won = 2;
+		printf("%s won", name_2);
 	}
-	//vertical2
-	else if (board[1][0] == 'O' && board[1][1] == 'O' && board[1][2] == 'O') {
-		printf("O won\n");
-		which_player_won = 2;
-	}
-	//vertical3
-	else if (board[2][0] == 'O' && board[2][1] == 'O' && board[2][2] == 'O') {
-		printf("O won\n");
-		which_player_won = 2;
-	}
-	//cross1
-	else if (board[0][0] == 'O' && board[1][1] == 'O' && board[2][2] == 'O') {
-		printf("O won\n");
-		which_player_won = 2;
-	}
-	//cross2
-	else if (board[0][2] == 'O' && board[1][1] == 'O' && board[2][0] == 'O') {
-		printf("O won\n");
-		which_player_won = 2;
-	}
-	//horizontal1
-	else if (board[0][0] == 'O' && board[1][0] == 'O' && board[2][0] == 'O') {
-		printf("O won\n");
-		which_player_won = 2;
-	}
-	//horizontal2
-	else if (board[0][1] == 'O' && board[1][1] == 'O' && board[2][1] == 'O') {
-		printf("O won\n");
-		which_player_won = 2;
-	}
-	//horizontal3
-	else if (board[0][2] == '0' && board[1][2] == '0' && board[2][2] == '0') {
-		printf("O won\n");
-		which_player_won = 2;
-	}
-	//all full = draw
-	else if (board[0][0] == 'X' || board[0][0] == 'O' && board[0][1] == 'X' || board[0][1] == 'O'
-		&& board[0][2] == 'X' || board[0][2] == 'O' && board[1][0] == 'X' || board[1][0] == 'O'
-		&& board[1][1] == 'X' || board[1][1] == 'O' && board[1][2] == 'X' || board[1][2] == 'O'
-		&& board[2][0] == 'X' || board[2][0] == 'O' && board[2][1] == 'X' || board[2][1] == 'O'
-		&& board[2][2] == 'X' || board[2][2] == 'O') {
+	// was there a tie?
+	else if (is_board_full(board) && which_player_won == 0) {
 		printf("Draw! Nobody wins\n");
 		which_player_won = 3;
 	}
 
 	return which_player_won;
 }
-	//else
-		//continue //? wiem ze nie to polecenie, ale ma isc dalej i nie mowic, czy jest wygrana czy nie ??
+
+int is_board_full(char board[3][3])
+{
+	int is_board_full = 1; // 0 - there's no draw; 1 - there's draw
+
+	for (int i = 0; i < 3; i++) // row loop
+	{
+		for (int j = 0; j < 3; j++) // column loop
+		{
+			if (board[i][j] == '_')
+			{
+				is_board_full = 0;
+			}
+		}
+	}
+
+	return is_board_full;
+}
+
+int has_token_won(char token, char board[3][3])
+{
+	int has_token_won = 0;
+
+	int no_tokens_in_line = 0;
+
+	//check each row
+	for (int i = 0; i < 3; i++) // row loop
+	{
+		no_tokens_in_line = 0;
+		for (int j = 0; j < 3; j++) // column loop
+		{
+			if (board[i][j] == token)
+			{
+				no_tokens_in_line++;
+			}
+		}
+		if (no_tokens_in_line == 3)
+		{
+			has_token_won = 1;
+		}
+	}
+
+	// check each column
+	for (int j = 0; j < 3; j++) // row loop
+	{
+		no_tokens_in_line = 0;
+		for (int i = 0; i < 3; i++) // column loop
+		{
+			if (board[i][j] == token)
+			{
+				no_tokens_in_line++;
+			}
+		}
+		if (no_tokens_in_line == 3)
+		{
+			has_token_won = 1;
+		}
+	}
+
+	// check first diagonal
+	if (board[0][0] == token && board[1][1] == token && board[2][2] == token) {
+		has_token_won = 1;
+	}
+
+	// check second diagonal
+	else if (board[0][2] == token && board[1][1] == token && board[2][0] == token) {
+		has_token_won = 1;
+	}
+
+	return has_token_won;
+}
