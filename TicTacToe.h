@@ -18,9 +18,10 @@ clock_t start, stop; // stats
 float game_duration; // stats
 
 
-
-void make_null_tab(char a[3][3]);
-void Print_Bord_on_Screen(char poziom[3][3]);
+void welcome_screen();
+void clear_screen();
+void clear_the_board(char a[3][3]);
+void display_board(char poziom[3][3]);
 void put_coordinates(int a, int b, char cos[3][3], char token);
 void give_coordinates();
 void coordinatesCheck(int* coordinate);
