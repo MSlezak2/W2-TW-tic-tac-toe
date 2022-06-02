@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <stdlib.h>
+#include <windows.h> 
 
 
 // Stan gry:
@@ -10,7 +12,7 @@ int x, y; // coordinates chosen by user
 int computer_x, computer_y; // coordinates chosen by computer
 
 
-int difficulty; // mo?na enum, b?dzie profesjonalniej
+int difficulty = 1; // mo?na enum, b?dzie profesjonalniej
 int game_mode;
 char name_1[50]; // imie pierwszego gracza
 char name_2[50];
@@ -31,8 +33,13 @@ void is_occupied(char board[3][3]);
 void choose_name(int game_mode);
 void choose_token();
 void stats();
+void choose_difficulty(int* difficulty);
 void computers_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y);
-int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, int* winning_choice_y);
+void mastermind_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y);
+void dummy_move(char board[3][3], char my_token, int* computer_x, int* computer_y);
+int can_player_win(char board[3][3], char rivals_token, int* winning_choice_x, int* winning_choice_y);
+float assess_move(char board[3][3], int x, int y, char my_token, char rivals_token);
+float quality_for_that_line(int no_empty_tiles_in_line, int no_my_tokens_in_line, int no_rivals_tokens_in_line);
 //void choose_game_mode(int game_mode);
 int checkforwin(int board[3][3]);
 void play_again();
@@ -45,23 +52,24 @@ int has_token_won(char token, char board[3][3]);
 int main()
 {
 
-	//board[0][0] = 'X'; board[0][1] = 'X'; board[0][2] = 'O';
-	//board[1][0] = 'O'; board[1][1] = 'O'; board[1][2] = 'X';
-	//board[2][0] = 'X'; board[2][1] = 'O'; board[2][2] = 'X';
+	board[0][0] = '_'; board[0][1] = '_'; board[0][2] = '_';
+	board[1][0] = '_'; board[1][1] = '_'; board[1][2] = '_';
+	board[2][0] = '_'; board[2][1] = '_'; board[2][2] = '_';
 	//
-	//computers_move(board, token_2, token_1, &computer_x, &computer_y);
+	//mastermind_move(board, token_2, token_1, &computer_x, &computer_y);
 
 	int which_player_won = 0;
 
 	do
 	{
 		// Ekran powitalny - u?ytkownik wybiera opcje itd...
+		srand(time(NULL)); // set seed for pseud-random number generator, do it before each game
 
 		///****tryb gry****/
 		choose_game_mode(&game_mode);
 		
 		///****trudno??****/
-		//difficulty = choose_difficulty();
+		choose_difficulty(&difficulty);
 
 		/****wybór imion****/
 		choose_name(game_mode);
@@ -70,6 +78,7 @@ int main()
 		choose_token();
 
 		/****start gry****/
+		system("cls");
 		printf("\n\nPress any key to start the game...");
 		getch();
 		start = clock();
@@ -112,6 +121,9 @@ int main()
 
 				case 3: // computer vs computer
 					/****ruch komputera (w zale?no?ci od poziomy trudno?ci)****/
+					computers_move(board, token_1, token_2, &computer_x, &computer_y);
+					put_coordinates(computer_x, computer_y, board, token_1);
+					Sleep(1500); // wait for 1.5s, for user to be able to see each move
 					break;
 				}
 
@@ -137,10 +149,15 @@ int main()
 
 				case 2: // player vs computer
 					/****ruch komputera (w zale?no?ci od poziomy trudno?ci)****/
+					computers_move(board, token_2, token_1, &computer_x, &computer_y);
+					put_coordinates(computer_x, computer_y, board, token_2);
 					break;
 
 				case 3: // computer vs computer
 					/****ruch komputera (w zale?no?ci od poziomy trudno?ci)****/
+					computers_move(board, token_2, token_1, &computer_x, &computer_y);
+					put_coordinates(computer_x, computer_y, board, token_2);
+					Sleep(1500); // wait for 1.5s, for user to be able to see each move
 					break;
 				}
 
@@ -424,21 +441,243 @@ void play_again()
 
 // Michal:
 
-void computers_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y) 
+void choose_difficulty(int* difficulty)
 {
-	// can the rival win in the next move?
-	can_rival_win(board, rivals_token, computer_x, computer_y);
-	// how?
-	// if so, prevent that (go with first available option)
+	char temp_difficulty;
 
-	// if no, process each move: 
-	// how many winning opportunities it creates?
-	// how many winning opportunities for the rival it blocks
+	system("cls");
+	printf("Choose difficulty level:\n\n");
+	printf("1 - dummy\n\n2 - mastermind\n\n");
+	scanf_s("\n%c", &temp_difficulty);
 
-	// choose the best one (but how the algorithm is going to "remember" that?)
+	while (temp_difficulty != '1' && temp_difficulty != '2')
+	{
+		system("cls");
+		printf("Make sure, that you enter correct value...\n\n");
+
+		printf("Choose difficulty level:\n\n");
+		printf("1 - dummy\n\n2 - mastermind\n\n");
+		scanf_s("\n%c", &temp_difficulty);
+	}
+
+	*difficulty = (int)temp_difficulty - 48;
 }
 
-int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, int* winning_choice_y)
+// TODO: Replace computer_x with x...
+void computers_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y)
+{
+	switch (difficulty)
+	{
+	case 1: // dummy
+		dummy_move(board, my_token, computer_x, computer_y);
+		break;
+
+	case 2: // mastermind
+		mastermind_move(board, token_1, token_2, computer_x, computer_y);
+		break;
+	}
+	
+}
+
+void dummy_move(char board[3][3], char my_token, int* computer_x, int* computer_y)
+{
+	int temp_x = 0;
+	int temp_y = 0;
+
+	do
+	{
+		temp_x = rand() % 3;
+		temp_y = rand() % 3;
+	} while (board[temp_x][temp_y] != '_');
+
+	*computer_x = temp_x;
+	*computer_y = temp_y;
+}
+
+void mastermind_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y) 
+{
+	int found_move = 0; // if algorithm finds the right move, it skips the remaining calculations
+
+	// can I win in this move? if so, do it
+	found_move = can_player_win(board, my_token, computer_x, computer_y);
+	
+	
+	// can the rival win in the next move? how? if so, prevent that
+	if (!found_move)
+	{
+		found_move = can_player_win(board, rivals_token, computer_x, computer_y);
+	}
+	
+	// if none of the above is true, assess each of the possibile moves: 
+	if (!found_move)
+	{
+		int temp_computer_x, temp_computer_y;
+		float best_rate = -1.0; // results of assessment of particular moves
+		float current_rate; 
+
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				if (board[i][j] == '_') // check if the tile is empty
+				{
+					//how many winning opportunities for me it creates? how many winning opportunities for the rival does it block?
+					current_rate = assess_move(board, i, j, my_token, rivals_token);
+					if (current_rate > best_rate)
+					{
+						// if the currently considered move is the best so far, remember it
+						best_rate = current_rate;
+						temp_computer_x = i;
+						temp_computer_y = j;
+					}
+				}
+			}
+		}
+		// return final coordinates
+		*computer_x = temp_computer_x;
+		*computer_y = temp_computer_y;
+	}
+
+}
+
+float assess_move(char board[3][3], int x, int y, char my_token, char rivals_token)
+{
+	// Check if that move creates some possibilities for creating a winning line or prevents 
+	// the rival from creating his winning lines. If there is such possibility take it into account
+	// while assessing the quality of the move. Line where there'd be only one token left should be 
+	// weighted more.
+
+	float move_quality = 0;
+	
+	int no_empty_tiles_in_line = 0; // number of empty tiles and my tokens in the currently considered line
+	int no_my_tokens_in_line = 0;
+	int no_rivals_tokens_in_line = 0;
+	// count how many winning lines could be made with my token placed in here
+
+	// row
+	no_empty_tiles_in_line = 0;
+	no_my_tokens_in_line = 0;
+	no_rivals_tokens_in_line = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		if (board[x][i] == '_')
+		{
+			no_empty_tiles_in_line++;
+		}
+		if (board[x][i] == my_token)
+		{
+			no_my_tokens_in_line++;
+		}
+		if (board[x][i] == rivals_token)
+		{
+			no_rivals_tokens_in_line++;
+		}
+	}
+
+	move_quality += quality_for_that_line(no_empty_tiles_in_line, no_my_tokens_in_line, no_rivals_tokens_in_line);
+
+	// column
+	no_empty_tiles_in_line = 0;
+	no_my_tokens_in_line = 0;
+	no_rivals_tokens_in_line = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		if (board[i][y] == '_')
+		{
+			no_empty_tiles_in_line++;
+		}
+		if (board[i][y] == my_token)
+		{
+			no_my_tokens_in_line++;
+		}
+		if (board[i][y] == rivals_token)
+		{
+			no_rivals_tokens_in_line++;
+		}
+	}
+
+	move_quality += quality_for_that_line(no_empty_tiles_in_line, no_my_tokens_in_line, no_rivals_tokens_in_line);
+
+	// first diagonal
+	if (x == y)
+	{
+		no_empty_tiles_in_line = 0;
+		no_my_tokens_in_line = 0;
+		no_rivals_tokens_in_line = 0;
+		for (int i = 0; i < 3; i++)
+		{
+			if (board[i][i] == '_')
+			{
+				no_empty_tiles_in_line++;
+			}
+			if (board[i][i] == my_token)
+			{
+				no_my_tokens_in_line++;
+			}
+			if (board[i][i] == rivals_token)
+			{
+				no_rivals_tokens_in_line++;
+			}
+		}
+
+		move_quality += quality_for_that_line(no_empty_tiles_in_line, no_my_tokens_in_line, no_rivals_tokens_in_line);
+	}
+
+
+
+	// second diagonal
+	if (x + y == 3 - 1)
+	{
+		no_empty_tiles_in_line = 0;
+		no_my_tokens_in_line = 0;
+		no_rivals_tokens_in_line = 0;
+		for (int i = 0; i < 3; i++)
+		{
+			if (board[i][2 - i] == '_')
+			{
+				no_empty_tiles_in_line++;
+			}
+			if (board[i][2 - i] == my_token)
+			{
+				no_my_tokens_in_line++;
+			}
+			if (board[i][2 - i] == rivals_token)
+			{
+				no_rivals_tokens_in_line++;
+			}
+		}
+
+		move_quality += quality_for_that_line(no_empty_tiles_in_line, no_my_tokens_in_line, no_rivals_tokens_in_line);
+	}
+
+	return move_quality;
+}
+
+float quality_for_that_line(int no_empty_tiles_in_line, int no_my_tokens_in_line, int no_rivals_tokens_in_line)
+{
+	float empty_line_weight = 0.5; // weight for the case when there is no token 
+	float my_token_present_weight = 1; // weight for the case when there has been a token already
+	float rivals_token_present_weight = 0.9; // weight for the case when there has been a rivals token already
+
+	float quality = 0;
+
+	if (no_empty_tiles_in_line == 3)
+	{
+		quality += empty_line_weight;
+	}
+	else if (no_empty_tiles_in_line == 2 && no_my_tokens_in_line == 1)
+	{
+		quality += my_token_present_weight;
+	}
+	else if (no_empty_tiles_in_line == 2 && no_rivals_tokens_in_line == 1)
+	{
+		quality += rivals_token_present_weight;
+	}
+
+	return quality;
+}
+
+int can_player_win(char board[3][3], char players_token, int* winning_choice_x, int* winning_choice_y)
 {
 	int can_he_win = 0;
 	char empty_tile = '_';
@@ -455,7 +694,7 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 		temp_no_empty_tiles = 0;
 		for (int j = 0; j < 3; j++) // x-coordinate
 		{
-			if (board[i][j] == rivals_token)
+			if (board[i][j] == players_token)
 			{
 				temp_no_rivals_tokens++;
 			}
@@ -481,7 +720,7 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 		temp_no_empty_tiles = 0;
 		for (int i = 0; i < 3; i++) // y-coordinate
 		{
-			if (board[i][j] == rivals_token)
+			if (board[i][j] == players_token)
 			{
 				temp_no_rivals_tokens++;
 			}
@@ -509,7 +748,7 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 		{
 			if (i == j) // check of tile belongs to the diagonal
 			{
-				if (board[i][j] == rivals_token)
+				if (board[i][j] == players_token)
 				{
 					temp_no_rivals_tokens++;
 				}
@@ -538,7 +777,7 @@ int can_rival_win(char board[3][3], char rivals_token, int* winning_choice_x, in
 		{
 			if (i + j == 2) // check of tile belongs to the diagonal
 			{
-				if (board[i][j] == rivals_token)
+				if (board[i][j] == players_token)
 				{
 					temp_no_rivals_tokens++;
 				}
