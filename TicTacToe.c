@@ -4,13 +4,28 @@
 #include <time.h>
 
 
-int difficulty = 1;
-int num_moves = 0;
-
-
-
 // Wojtek:
-void make_null_tab(char a[3][3])
+
+void welcome_screen()
+{   //TIC TAC TOE
+	system("cls");
+	printf(" TTTTTTTTTTT    IIIII   CCCCCCCCCC  TTTTTTTTTTT  AAAAAAAAAAA  CCCCCCCCCC TTTTTTTTTTT  OOOOOOOOOOO  EEEEEEEEEEE     \n");
+	printf("     TTT        IIIII   CCC             TTT      AAA     AAA  CCC            TTT      OOO     OOO  EEE             \n");
+	printf("     TTT        IIIII   CCC             TTT      AAAAAAAAAAA  CCC            TTT      OOO     OOO  EEEEEE           \n");
+	printf("     TTT        IIIII   CCC             TTT      AAA     AAA  CCC            TTT      OOO     OOO  EEE             \n");
+	printf("     TTT        IIIII   CCCCCCCCCC      TTT      AAA     AAA  CCCCCCCCCC     TTT      OOOOOOOOOOO  EEEEEEEEEEE      \n");
+
+	printf("\n\nPress any key to start the game...");
+	getch();
+}
+
+void clear_screen()
+{
+	system("cls");
+	printf("\tTIC TAC TOE\n\n");
+}
+
+void clear_the_board(char a[3][3])
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -21,7 +36,7 @@ void make_null_tab(char a[3][3])
 	}
 }
 
-void Print_Bord_on_Screen(char poziom[3][3])
+void display_board(char poziom[3][3])
 {
 	printf("  " "\n");
 	printf("     y=1 y=2 y=3" "\n");
@@ -60,9 +75,10 @@ void give_coordinates()
 {
 
 	int temp_x, temp_y;
+
 	printf("\ngive coordinates x ");
 	scanf_s("%d", &temp_x);
-	x = temp_x - 1;
+	x = temp_x - 1; // map from user's range [1-3] to computer's range [0-2]
 
 	coordinatesCheck(&x);
 
@@ -74,22 +90,28 @@ void give_coordinates()
 
 }
 
+// Iza:
+
 void coordinatesCheck(int* coordinate)
 {
-	int temp_coordinate = 0;
+	char temp_coordinate = ' ';
 
 	while ((*coordinate != 0) && (*coordinate != 1) && (*coordinate != 2))
 	{
-		printf("Your coordinates are outside of the game board. Try again: \n");
-		printf("coordinate: ");
-		scanf_s("%d", &temp_coordinate);
-		*coordinate = temp_coordinate - 1;
+		printf("Your coordinates are outside of the game board. Try again. \n");
+		printf("Enter new coordinate: ");
+		scanf_s("%c\n", &temp_coordinate);
+		// TODO: figure out why there's a problem with those new line characters
+
+		*coordinate = (int)temp_coordinate - 48 - 1;
 	}
+
 }
 
 void is_occupied(char board[3][3])
 {
 	int temp_x, temp_y;
+	
 	while (board[x][y] == 'X' || board[x][y] == 'O')
 	{
 		printf("Your coordinates are pointing to an already occupied spot. Try again: \n");
@@ -108,7 +130,7 @@ void is_occupied(char board[3][3])
 
 void choose_name(int game_mode)
 {
-	system("cls");
+	clear_screen();
 	if (game_mode == 1)
 	{
 		printf("Give names of players: \n");
@@ -144,7 +166,7 @@ void choose_token()
 {
 	//komunikat dla usera
 	do {
-		system("cls");
+		clear_screen();
 		printf("Now you need to choose your game token.");
 		printf("\nYou can choose between 'X' or 'O'.");
 		printf("\nEnter your choice: ");
@@ -163,9 +185,10 @@ void choose_token()
 	{
 		token_2 = 'X';
 	}
-	system("cls");
+	clear_screen();
 	printf("Your choice is '%c' token.", token_1);
 	printf("\nPlayer 2 has '%c' token.\n", token_2);
+	Sleep(2000);
 }
 
 void stats()
@@ -175,7 +198,7 @@ void stats()
 	float game_duration_sec = (int)game_duration % 60;
 
 	printf("\nIn this game %d moves was performed\n", num_moves);
-	printf("Game duration: %d minutes and %.f seconds. ", game_duration_min, game_duration_sec);
+	printf("\nGame duration: %d minutes and %.f seconds. ", game_duration_min, game_duration_sec);
 }
 
 void play_again()
@@ -185,14 +208,14 @@ void play_again()
 
 	do
 	{
-		printf("Do You want to play again? (Y / N)\n");
+		printf("\n\nDo You want to play again? (Y / N)\n\n");
 		scanf_s(" %c", &newGame);
 
 	} while (newGame != 'Y' && newGame != 'N');
 
 	if (newGame == 'N')
 	{
-		printf("\nGood Bye!");
+		printf("\nGood Bye!\n\n");
 		exit(0);
 	}
 
@@ -204,14 +227,14 @@ void choose_difficulty(int* difficulty)
 {
 	char temp_difficulty;
 
-	system("cls");
+	clear_screen();
 	printf("Choose difficulty level:\n\n");
 	printf("1 - dummy\n\n2 - mastermind\n\n");
 	scanf_s("\n%c", &temp_difficulty);
 
 	while (temp_difficulty != '1' && temp_difficulty != '2')
 	{
-		system("cls");
+		clear_screen();
 		printf("Make sure, that you enter correct value...\n\n");
 
 		printf("Choose difficulty level:\n\n");
@@ -225,6 +248,7 @@ void choose_difficulty(int* difficulty)
 // TODO: Replace computer_x with x...
 void computers_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y)
 {
+
 	switch (difficulty)
 	{
 	case 1: // dummy
@@ -556,21 +580,19 @@ int can_player_win(char board[3][3], char players_token, int* winning_choice_x, 
 		*winning_choice_y = temp_winning_choice_y;
 	}
 
-
 	// TODO: Extract "check each row" and "check each column" sections into separate functions
 	return can_he_win;
 }
 
 // Gaba:
 
-
 void choose_game_mode(int* game_mode)
 {
 	char temp_game_mode = ' ';
 
 	do {
-		system("cls");
-		printf("Choose game mode:\n\nPlayer vs player - Press 1\nPlayer vs computer - Press 2\nComputer vs Computer - Press 3\n");
+		clear_screen();
+		printf("Choose game mode:\n\nPlayer vs player - choose 1\nPlayer vs computer - choose 2\nComputer vs Computer - choose 3\n\n");
 		scanf_s("%c", &temp_game_mode);
 	} while (temp_game_mode != '1' && temp_game_mode != '2' && temp_game_mode != '3');
 
@@ -582,20 +604,21 @@ int checkforwin(int board[3][3])
 {
 	int which_player_won = 0; // 0 - nobody; 1 - player_1; 2 - player_2; 3 - tie
 
+	// has player_1 won?
 	if (has_token_won(token_1, board))
 	{
 		which_player_won = 1;
-		printf("%s won", name_1);
+		printf("\n\n%s won", name_1);
 	}
 	// has player_2 won?
 	else if (has_token_won(token_2, board))
 	{
 		which_player_won = 2;
-		printf("%s won", name_2);
+		printf("\n\n%s won", name_2);
 	}
 	// was there a tie?
 	else if (is_board_full(board) && which_player_won == 0) {
-		printf("Draw! Nobody wins\n");
+		printf("\n\nDraw! Nobody wins\n");
 		which_player_won = 3;
 	}
 
