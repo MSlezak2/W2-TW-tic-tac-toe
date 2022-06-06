@@ -73,7 +73,6 @@ void put_coordinates(int a, int b, char cos[3][3], char token)
 
 void give_coordinates()
 {
-
 	int temp_x, temp_y;
 
 	printf("\ngive coordinates x ");
@@ -87,7 +86,6 @@ void give_coordinates()
 	y = temp_y - 1;
 
 	coordinatesCheck(&y);
-
 }
 
 // Iza:
@@ -101,7 +99,6 @@ void coordinatesCheck(int* coordinate)
 		printf("Your coordinates are outside of the game board. Try again. \n");
 		printf("Enter new coordinate: ");
 		scanf_s("%c\n", &temp_coordinate);
-		// TODO: figure out why there's a problem with those new line characters
 
 		*coordinate = (int)temp_coordinate - 48 - 1;
 	}
@@ -245,7 +242,6 @@ void choose_difficulty(int* difficulty)
 	*difficulty = (int)temp_difficulty - 48;
 }
 
-// TODO: Replace computer_x with x...
 void computers_move(char board[3][3], char my_token, char rivals_token, int* computer_x, int* computer_y)
 {
 
@@ -256,7 +252,7 @@ void computers_move(char board[3][3], char my_token, char rivals_token, int* com
 		break;
 
 	case 2: // mastermind
-		mastermind_move(board, token_1, token_2, computer_x, computer_y);
+		mastermind_move(board, my_token, rivals_token, computer_x, computer_y);
 		break;
 	}
 
@@ -283,7 +279,6 @@ void mastermind_move(char board[3][3], char my_token, char rivals_token, int* co
 
 	// can I win in this move? if so, do it
 	found_move = can_player_win(board, my_token, computer_x, computer_y);
-
 
 	// can the rival win in the next move? how? if so, prevent that
 	if (!found_move)
@@ -320,7 +315,6 @@ void mastermind_move(char board[3][3], char my_token, char rivals_token, int* co
 		*computer_x = temp_computer_x;
 		*computer_y = temp_computer_y;
 	}
-
 }
 
 float assess_move(char board[3][3], int x, int y, char my_token, char rivals_token)
@@ -695,5 +689,3 @@ int has_token_won(char token, char board[3][3])
 
 	return has_token_won;
 }
-
-
